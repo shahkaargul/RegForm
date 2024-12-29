@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GIKIS&C Reunion Registration Form</title>
+    <link rel="icon" type="image/x-icon" href="images/gikilogo.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/student.css" />
+  </head>
+  <body>
+    <section class="hero is-primary is-bold animate-in">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">Student Registration Form</h1>
+          <p class="subtitle">Please fill in your information</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="form-container animate-in">
+      <form id="form" class="container box animate-up" method="POST" novalidate>
+        <div class="field">
+          <label class="label">Full Name</label>
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="text"
+              placeholder="Your Full Name"
+              name="Full Name"
+              required
+              pattern="^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$"
+            />
+            <span class="icon is-small is-left">
+              <i class="fas fa-user"></i>
+            </span>
+          </div>
+          <p class="help is-danger"></p>
+        </div>
+
+        <div class="field">
+          <label class="label">Email Address</label>
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="email"
+              placeholder="Your Email Address"
+              name="Email Address"
+              required
+            />
+            <span class="icon is-small is-left">
+              <i class="fas fa-envelope"></i>
+            </span>
+          </div>
+          <p class="help is-danger"></p>
+        </div>
+
+        <div class="field">
+          <label class="label">Phone Number</label>
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="tel"
+              placeholder="Your Phone Number"
+              name="Phone Number"
+              required
+              pattern="^[0-9]{10}$"
+            />
+            <span class="icon is-small is-left">
+              <i class="fas fa-phone"></i>
+            </span>
+          </div>
+          <p class="help is-danger"></p>
+        </div>
+
+        <div class="field">
+          <label class="label">Graduation Year</label>
+          <div class="control has-icons-left">
+            <input
+              class="input"
+              type="number"
+              placeholder="Your Graduation Year"
+              name="Graduation Year"
+              required
+              min="1900"
+              max="2100"
+            />
+            <span class="icon is-small is-left">
+              <i class="fas fa-graduation-cap"></i>
+            </span>
+          </div>
+          <p class="help is-danger"></p>
+        </div>
+
+        <div class="field">
+          <div class="control">
+            <button class="button is-primary is-fullwidth" type="submit" id="submit-button">
+              Register
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div id="message" class="notification is-hidden"></div>
+      <div id="thank-you-message" class="thank-you-container is-hidden">
+        <div class="thank-you-content">
+          <i class="fas fa-check-circle thank-you-icon"></i>
+          <h2 class="thank-you-title">Thank You!</h2>
+          <p class="thank-you-text">We will contact you soon.</p>
+        </div>
+      </div>
+    </div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <script src="validation.js"></script>
+    <script src="form.js"></script>
+    <script>
+        document.getElementById("form").addEventListener("submit", function (e) {
+          e.preventDefault(); // Prevent the default form submission
+          document.getElementById("message").textContent = "Submitting..";
+          document.getElementById("message").style.display = "block";
+          document.getElementById("submit-button").disabled = true;
+  
+          // Collect the form data
+          var formData = new FormData(this);
+          var keyValuePairs = [];
+          for (var pair of formData.entries()) {
+            keyValuePairs.push(pair[0] + "=" + pair[1]);
+          }
+  
+          var formDataString = keyValuePairs.join("&");
+  
+          // Send a POST request to your Google Apps Script
+          fetch(
+            "https://script.google.com/macros/s/AKfycbwGi9l9S0jnZp5RL-yt_TN2_DvAv6ClT5jNxX2v7gJMgTKAs-bRJbqdJJZ2kMg1ZyWt/exec",
+            {
+              redirect: "follow",
+              method: "POST",
+              body: formDataString,
+              headers: {
+                "Content-Type": "text/plain;charset=utf-8",
+              },
+            }
+          )
+            .then(function (response) {
+              // Check if the request was successful
+              if (response) {
+                return response; // Assuming your script returns JSON response
+              } else {
+                throw new Error("Failed to submit the form.");
+              }
+            })
+            .then(function (data) {
+              // Hide the form
+              document.getElementById("form").style.display = "none";
+              
+              // Show and animate the thank you message
+              const thankYouMessage = document.getElementById("thank-you-message");
+              thankYouMessage.classList.remove("is-hidden");
+              thankYouMessage.classList.add("fade-in");
+
+              // Reset form and hide message after delay
+              setTimeout(function () {
+                document.getElementById("form").style.display = "block";
+                thankYouMessage.classList.add("is-hidden");
+                thankYouMessage.classList.remove("fade-in");
+                document.getElementById("form").reset();
+              }, 3000);
+            })
+            .catch(function (error) {
+              // Handle errors, you can display an error message here
+              console.error(error);
+              document.getElementById("message").textContent =
+                "An error occurred while submitting the form.";
+              document.getElementById("message").style.display = "block";
+            });
+        });
+      </script>
+
+    <style>
+      .thank-you-container {
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .thank-you-content {
+        animation: popUp 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+
+      .thank-you-icon {
+        font-size: 4rem;
+        color: #48c774;
+        margin-bottom: 1rem;
+      }
+
+      .thank-you-title {
+        font-size: 2rem;
+        color: #363636;
+        margin-bottom: 0.5rem;
+      }
+
+      .thank-you-text {
+        font-size: 1.2rem;
+        color: #666;
+      }
+
+      .fade-in {
+        animation: fadeIn 0.5s ease-in;
+      }
+
+      @keyframes popUp {
+        0% {
+          transform: scale(0.3);
+          opacity: 0;
+        }
+        70% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+    </style>
+  </body>
+</html>
